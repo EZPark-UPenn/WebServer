@@ -20,4 +20,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^garage/', include('garage.urls')),
     url(r'^client/', include('client.urls')),
+    url(r'^', include('registration.backends.simple.urls')),
 ]
+    
