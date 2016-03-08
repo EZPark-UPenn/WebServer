@@ -77,16 +77,16 @@ WSGI_APPLICATION = 'ezpark.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.oracle',
-#         'NAME': 'ORCL',
-#         'USER': 'ezdbuser',
-#         'PASSWORD': 'ezparking',
-#         'HOST': 'ezdb.cxhi2pl58sfh.us-west-2.rds.amazonaws.com',
-#         'PORT': '1521',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'ORCL',
+        'USER': 'ezdbuser',
+        'PASSWORD': 'ezparking',
+        'HOST': 'ezdb.cxhi2pl58sfh.us-west-2.rds.amazonaws.com',
+        'PORT': '1521',
+    }
+}
 
 
 # Password validation
