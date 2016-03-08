@@ -45,11 +45,16 @@ class RegistrationForm(UserCreationForm):
         required=True
     )
 
-    car = forms.CharField(required=True)
+    license_plate = forms.CharField(max_length=20)
+    make = forms.CharField(max_length=20)
+    model = forms.CharField(max_length=30)
+    color = forms.CharField(max_length=10)
+    state = forms.CharField(max_length=2)
 
     class Meta(UserCreationForm.Meta):
         fields = [
-            User.USERNAME_FIELD,
+            'first_name',
+            'last_name',
             'email',
             'password1',
             'password2'
