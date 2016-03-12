@@ -25,19 +25,6 @@ class Migration(migrations.Migration):
                 ('state', models.CharField(max_length=2)),
             ],
         ),
-        migrations.CreateModel(
-            name='Transaction',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.IntegerField()),
-                ('time_in', models.DateTimeField()),
-                ('time_out', models.DateTimeField()),
-                ('image_in', models.ImageField(upload_to='in')),
-                ('image_out', models.ImageField(upload_to='out')),
-                ('car', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='history_payments', to='client.Car')),
-                ('garage', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='history_transactions', to='garage.Garage')),
-            ],
-        ),
         migrations.RemoveField(
             model_name='client',
             name='car',
