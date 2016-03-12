@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'client',
     'garage',
+    'garage_manager',
     'registration',
     'django.contrib.admin',
     'django.contrib.auth',

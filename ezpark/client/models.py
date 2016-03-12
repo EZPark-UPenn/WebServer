@@ -14,6 +14,7 @@ class Car(models.Model):
 	model = models.CharField(max_length=30)
 	color = models.CharField(max_length=10)
 	state = models.CharField(max_length=2)
+	parked_in = models.ForeignKey('garage_manager.GarageManager', related_name='cars_in_garage', default=None, null=True)
 
 class Transaction(models.Model):
 	car = models.ForeignKey(Car, related_name='history_payments')
