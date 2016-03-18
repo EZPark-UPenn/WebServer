@@ -53,6 +53,7 @@ def log_car(request, license_plate):
 	garage = Garage.objects.get(id=2) # TODO: replace with actual garage id
 	garage_manager = GarageManager.objects.get(garage=garage)
 	car = Car.objects.get(license_plate=license_plate)
+
 	if car in garage_manager.cars_in_garage.all():
 		return exit(request, car, garage_manager)
 	return enter(request, car, garage, garage_manager)
