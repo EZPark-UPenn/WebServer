@@ -16,6 +16,17 @@ from garage.models import Garage
 
 User = get_user_model()
 
+
+def processing_login(request):
+    url = '/register-client/'
+    user = User.objects.get(username=request.user)
+    if Client.objects.filter(user=user).exists():
+        return redirect('/client/home')
+    if Garage.objects.filter(user=user).exists():
+        return redirect('/garage/home')
+    return redirect(url)
+
+
 class ClientRegistrationView(FormView):
     """
     Base class for user registration views.
