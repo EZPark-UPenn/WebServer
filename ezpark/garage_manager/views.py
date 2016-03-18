@@ -1,8 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+
 from client.models import Car, Transaction
+
 from garage_manager.models import GarageManager
+
 from garage.models import Garage
+
 from datetime import datetime
 
 # Create your views here.
@@ -49,8 +55,12 @@ def exit(request, car, garage_manager):
 	response = "{} {}'s car exited {}.".format(car.client.user.first_name, car.client.user.last_name, garage_manager.garage.user.username)
 	return HttpResponse(response)
 
-def log_car(request, license_plate):
-	garage = Garage.objects.get(id=2) # TODO: replace with actual garage id
+@csrf_exempt
+@require_http_methods(["POST"])
+def log_car(request):
+	license_plate = request.POST["license_plate"]
+	gid = request.POST["gid"]
+	garage = Garage.objects.get(id=gid)
 	garage_manager = GarageManager.objects.get(garage=garage)
 	car = Car.objects.get(license_plate=license_plate)
 
