@@ -33,4 +33,4 @@ class RegistrationView(BaseRegistrationView):
         return new_user
 
     def get_success_url(self, user):
-        return '/'
+        return '/client/home'
