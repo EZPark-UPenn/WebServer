@@ -32,7 +32,8 @@ def home(request):
 def cars(request):
     user = User.objects.get(username=request.user)
     client = Client.objects.get(user=user)
-    context = {'user': user, 'client': client}
+    cars = client.cars.all()
+    context = {'user': user, 'client': client, 'cars': cars}
     return render(request, 'client/cars-overview.html', context)
 
 def register_car(request):
