@@ -48,6 +48,11 @@ def car_history(request):
     return HttpResponse("Hello, world. You're at the client's car's history.")
 
 def client_history(request):
+    user = User.objects.get(username=request.user)
+    client = Client.objects.get(user=user)
+    all_transactions = Transaction.objects.filter(car__in=client.cars.all())
+
+    context = {'user': user, 'client': client, 'transactions': all_transactions}
     return render(request, 'client/client-history.html', context)
     # return HttpResponse("Hello, world. You're at the client's overall history.")
 
