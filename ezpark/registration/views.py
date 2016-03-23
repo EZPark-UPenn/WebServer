@@ -36,16 +36,18 @@ def processing_login(request):
 def payment_register(request):
     if request.method == "POST":
         nonce = request.POST["payment_method_nonce"]
-        user = User.objects.get(username=request.user)
+        client = Client.objects.get(user=User.objects.get(username=request.user))
 
         result = braintree.Customer.create({
-            "first_name": user.first_name,
-            "last_name": user.last_name,
+            "first_name": client.user.first_name,
+            "last_name": client.user.last_name,
+            "email": client.user.email,
             "payment_method_nonce": nonce
         })
         
         if result.is_success:
-            print result.customer.id # TODO: Add this customer ID to client model
+            client.braintree_id = result.customer.id
+            client.save()
             return redirect('/client/home')
         else:
             return HttpResponse("Failure")
