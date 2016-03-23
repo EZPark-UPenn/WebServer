@@ -4,9 +4,10 @@ Base view classes for all registration workflows.
 """
 
 from django.conf import settings
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views.generic.edit import FormView
 from django.contrib.auth import authenticate, get_user_model, login
+from django.http import HttpResponse
 
 from registration import signals
 from registration.forms import ClientRegistrationForm, GarageRegistrationForm
@@ -14,7 +15,13 @@ from registration.forms import ClientRegistrationForm, GarageRegistrationForm
 from client.models import Client, Car
 from garage.models import Garage
 
+import braintree
+
 User = get_user_model()
+braintree.Configuration.configure(braintree.Environment.Sandbox,
+                                  merchant_id="fkchrkdh3t7nh2kd",
+                                  public_key="bspwxc85cxjh6dpx",
+                                  private_key="0ad5811c83fcc2b5adc7189bb06b9b33")
 
 
 def processing_login(request):
@@ -25,6 +32,29 @@ def processing_login(request):
     if Garage.objects.filter(user=user).exists():
         return redirect('/garage/home')
     return redirect(url)
+
+def payment_register(request):
+    if request.method == "POST":
+        nonce = request.POST["payment_method_nonce"]
+        user = User.objects.get(username=request.user)
+
+        result = braintree.Customer.create({
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "payment_method_nonce": nonce
+        })
+        
+        if result.is_success:
+            print result.customer.id # TODO: Add this customer ID to client model
+            return redirect('/client/home')
+        else:
+            return HttpResponse("Failure")
+
+    elif request.method == "GET":
+        return render(request, 'registration/payment_registration_form.html')
+
+def braintree_client_token(request):
+    return HttpResponse(braintree.ClientToken.generate())
 
 
 class ClientRegistrationView(FormView):
@@ -109,7 +139,7 @@ class ClientRegistrationView(FormView):
         return new_user
 
     def get_success_url(self, user):
-        return '/client/home'
+        return '/register-client/payment-method/'
 
 
 class GarageRegistrationView(FormView):

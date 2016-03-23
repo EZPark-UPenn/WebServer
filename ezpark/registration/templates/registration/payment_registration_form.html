@@ -1,0 +1,24 @@
+<h1>Register a Payment Method</h1>
+<h4>Don't worry, you won't be charged until you park</h4>
+<form id="checkout" method="post" action="{% url 'payment_register' %}">{% csrf_token %}
+  <div id="payment-form"></div>
+  <input type="submit" value="Register Payment Method">
+</form>
+
+<script src="https://js.braintreegateway.com/js/braintree-2.21.0.min.js"></script>
+<script>
+
+function httpGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+var clientToken = httpGet("{% url 'client_token' %}");
+
+braintree.setup(clientToken, "dropin", {
+  container: "payment-form"
+});
+</script>
