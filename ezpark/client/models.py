@@ -32,5 +32,8 @@ class Transaction(models.Model):
     image_in = models.ImageField(upload_to="in", null=True)
     image_out = models.ImageField(upload_to="out", null=True)
 
+    class Meta:
+        ordering = ['-time_in']
+
     def __str__(self):
         return "{} parked in {} at {}".format(self.car, self.garage, self.time_in)

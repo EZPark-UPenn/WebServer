@@ -15,6 +15,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
+from client.forms import CarRegistrationForm
+
 
 from . import validators
 
@@ -22,7 +24,7 @@ from . import validators
 User = get_user_model()
 
 
-class ClientRegistrationForm(UserCreationForm):
+class ClientRegistrationForm(UserCreationForm, CarRegistrationForm):
     """
     Form for registering a new user account.
 
@@ -44,12 +46,6 @@ class ClientRegistrationForm(UserCreationForm):
         help_text=_(u'email address'),
         required=True
     )
-
-    license_plate = forms.CharField(max_length=20)
-    make = forms.CharField(max_length=20)
-    model = forms.CharField(max_length=30)
-    color = forms.CharField(max_length=10)
-    state = forms.CharField(max_length=2)
 
     class Meta(UserCreationForm.Meta):
         fields = [

@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 
+from client.forms import CarRegistrationForm
 from client.models import Client, Car, Transaction
 from garage.models import Garage
 
@@ -39,7 +40,19 @@ def cars(request):
 def register_car(request):
     user = User.objects.get(username=request.user)
     client = Client.objects.get(user=user)
-    context = {'user': user, 'client': client}
+
+    if request.method == 'POST':
+        form = CarRegistrationForm(request.POST)
+        if form.is_valid():
+            car = Car(make=request.POST['make'], model=request.POST['model'],
+                  color=request.POST['color'], state=request.POST['state'],
+                  license_plate=request.POST['license_plate'], client=client)
+            car.save()
+            return redirect('/client/cars-overview')
+    else:
+        form = CarRegistrationForm()
+
+    context = {'user': user, 'client': client, 'form': form}
     return render(request, 'client/register-car.html', context)
 
 def car_history(request):
