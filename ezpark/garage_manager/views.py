@@ -1,3 +1,5 @@
+import braintree
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
@@ -39,7 +41,7 @@ def exit(request, car, garage_manager):
 
 	amt_time = transaction.time_out.replace(tzinfo=None) - transaction.time_in.replace(tzinfo=None)
 	# TODO: calculate amount here
-	amount = 0
+	amount = 42
 	transaction.amount = amount
 
 	image = None
@@ -47,7 +49,15 @@ def exit(request, car, garage_manager):
 	transaction.save()
 
 	client = car.client
-	# TODO: payments stuff here
+	cid = client.braintree_id
+
+	result = braintree.Transaction.sale({
+		"customer_id": cid,
+		"amount": str(amount),
+		"options": {
+			"submit_for_settlement": True
+		}
+	})
 
 	# TODO: open gate
 	car.parked_in = None
