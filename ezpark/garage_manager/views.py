@@ -13,6 +13,8 @@ from garage.models import Garage
 
 from datetime import datetime
 
+import sys
+
 # Create your views here.
 def get_client(request, license_plate):
 	response = "<p>The license plate was {}.<p>".format(license_plate)
@@ -22,7 +24,8 @@ def get_client(request, license_plate):
 	response += "<p>The user is {} {}<p>".format(client.user.first_name, client.user.last_name)
 	return HttpResponse(response)
 
-def enter(request, car, garage, garage_manager):
+def enter(car, garage, garage_manager):
+	print "Logging Entry..."
 	image = None
 	start = datetime.now()
 	transaction = Transaction(car=car, garage=garage, time_in=start, image_in=image)
@@ -33,9 +36,10 @@ def enter(request, car, garage, garage_manager):
 	car.parked_in = garage_manager
 	car.save()
 	response = "{} {}'s car entered {}.".format(car.client.user.first_name, car.client.user.last_name, garage.user.username)
-	return HttpResponse(response)
+	return response
 
-def exit(request, car, garage_manager):
+def exit(car, garage_manager):
+	print "Logging Exit..."
 	transaction = Transaction.objects.get(car=car, time_out=None)
 	transaction.time_out = datetime.now()
 
@@ -63,7 +67,7 @@ def exit(request, car, garage_manager):
 	car.parked_in = None
 	car.save()
 	response = "{} {}'s car exited {}.".format(car.client.user.first_name, car.client.user.last_name, garage_manager.garage.user.username)
-	return HttpResponse(response)
+	return response
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -75,5 +79,28 @@ def log_car(request):
 	car = Car.objects.get(license_plate=license_plate)
 
 	if car in garage_manager.cars_in_garage.all():
-		return exit(request, car, garage_manager)
-	return enter(request, car, garage, garage_manager)
+		response = exit(car, garage_manager)
+		return HttpResponse(response)
+	response = enter(car, garage, garage_manager)
+	return HttpResponse(response)
+
+def local_log_car(license_plate, gid):
+	sys.stdout = open("/home/ubuntu/logs.txt", "a")
+	print "ENTERED CAR LOG.............."
+
+	print "GID: ", gid
+	print "License Plate #: ", license_plate
+
+	garage = Garage.objects.get(id=gid)
+	garage_manager = GarageManager.objects.get(garage=garage)
+
+	if Car.objects.filter(license_plate=license_plate).exists():
+		car = Car.objects.get(license_plate=license_plate)
+	else:
+		return False
+
+	print "Successfully Logged Car"
+
+	if car in garage_manager.cars_in_garage.all():
+		return exit(car, garage_manager)
+	return enter(car, garage, garage_manager)
