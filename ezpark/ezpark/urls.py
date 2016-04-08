@@ -22,8 +22,7 @@ urlpatterns = [
     url(r'^garage/', include('garage.urls')),
     url(r'^client/', include('client.urls')),
     url(r'^manager/', include('garage_manager.urls')),
-    ## Comment out to allow local usability:
-    #url(r'^alpr/', include('alpr.urls')),
+    url(r'^alpr/', include('alpr.urls')),
     url(r'^', include('registration.backends.simple.urls')),
 ]
 
