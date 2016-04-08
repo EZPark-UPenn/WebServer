@@ -15,12 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^garage/', include('garage.urls')),
     url(r'^client/', include('client.urls')),
     url(r'^manager/', include('garage_manager.urls')),
+    ## Comment out to allow local usability:
+    #url(r'^alpr/', include('alpr.urls')),
     url(r'^', include('registration.backends.simple.urls')),
 ]
+
+urlpatterns += staticfiles_urlpatterns()
     
