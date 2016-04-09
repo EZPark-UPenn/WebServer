@@ -91,23 +91,31 @@ def log_car(request):
 	response = enter(car, garage, garage_manager)
 	return HttpResponse(response)
 
-def local_log_car(license_plate, gid):
+def local_log_car(alpr_data, gid):
 	sys.stdout = open("/home/ubuntu/logs.txt", "a")
 	print "ENTERED CAR LOG.............."
 
 	print "GID: ", gid
-	print "License Plate #: ", license_plate
 
-	garage = Garage.objects.get(id=gid)
-	garage_manager = GarageManager.objects.get(garage=garage)
+	candidates = alpr_data["candidates"]
+	for candidate in candidates:
+		license_plate = candidate["plate"]
+		if Car.objects.filter(license_plate=license_plate).exists():
+			car = Car.objects.get(license_plate=license_plate)
+			break
 
-	if Car.objects.filter(license_plate=license_plate).exists():
-		car = Car.objects.get(license_plate=license_plate)
+	response = {}
+	if not car:
+		response["open_gate"] = False
 	else:
-		return False
 
-	print "Successfully Logged Car"
+		print "Successfully Logged Car"
 
-	if car in garage_manager.cars_in_garage.all():
-		return exit(car, garage_manager)
-	return enter(car, garage, garage_manager)
+		if car in garage_manager.cars_in_garage.all():
+			exit(car, garage_manager)
+		enter(car, garage, garage_manager)
+
+		response["open_gate"] = True
+
+	return response
+
