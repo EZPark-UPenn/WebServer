@@ -128,6 +128,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
 LOGIN_REDIRECT_URL = '/processing-login/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")

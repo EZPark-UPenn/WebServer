@@ -1,0 +1,62 @@
+/*!
+ * Start Bootstrap - Business Frontpage HTML Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+
+/* Header Image Background - Change the URL below to your image path (example: ../images/background.jpg) */
+
+.business-header {
+    height: 200px;
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    background-color: green;
+}
+
+.plate-info{
+    height:400px;
+    
+}
+.license-plate{
+    height: 400px;
+    width:750px;
+    background:url('http://www.epromologo.com/bigimages/bSilkscreen%20Plastic%20License%20Plate%20Frame2.jpg') center center no-repeat scroll;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+.entry{
+    margin-left: 30%;
+    font-size: 1000%;
+    color: white;
+}
+.payment{
+    margin-top: 10px;
+    background-color: #cccccc;
+}
+@font-face {
+  font-family: "LicensePlate";
+  src: url('../../garage-manager/fonts/LicensePlate.ttf') format("truetype");
+}
+.lp-num{
+    margin: 90px;
+    font-size: 1300%;
+    font-family: LicensePlate;
+}
+/* Customize the text color and shadow color and to optimize text legibility. */
+
+.tagline {
+    text-shadow: 0 0 10px #000;
+    color: #fff;
+}
+
+.img-center {
+    margin: 0 auto;
+}
+
+footer {
+    margin: 50px 0;
+}
