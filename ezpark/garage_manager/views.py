@@ -24,6 +24,13 @@ def get_client(request, license_plate):
 	response += "<p>The user is {} {}<p>".format(client.user.first_name, client.user.last_name)
 	return HttpResponse(response)
 
+def demo(request):
+
+    latest = Transaction.objects.latest('time_in')
+
+    context = {'transaction': latest }
+    return render(request, 'garage-manager/index.html', context)
+
 def enter(car, garage, garage_manager):
 	print "Logging Entry..."
 	image = None
