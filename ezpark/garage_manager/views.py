@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 
 from client.models import Car, Transaction
 
@@ -11,9 +12,10 @@ from garage_manager.models import GarageManager
 
 from garage.models import Garage
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import sys
+import pytz
 
 # Create your views here.
 def get_client(request, license_plate):
@@ -52,7 +54,7 @@ def exit(car, garage_manager):
 
 	amt_time = transaction.time_out.replace(tzinfo=None) - transaction.time_in.replace(tzinfo=None)
 	# TODO: calculate amount here
-	amount = 42
+	amount = amt_time.seconds * 0.5 
 	transaction.amount = amount
 
 	image = None
@@ -97,7 +99,13 @@ def local_log_car(alpr_data, gid):
 
 	print "GID: ", gid
 
-	candidates = alpr_data["candidates"]
+	garage = Garage.objects.get(id=gid)
+	garage_manager = GarageManager.objects.get(garage=garage)
+
+	car = None
+	license_plate = None
+
+	candidates = alpr_data[0]["candidates"]
 	for candidate in candidates:
 		license_plate = candidate["plate"]
 		if Car.objects.filter(license_plate=license_plate).exists():
@@ -107,15 +115,43 @@ def local_log_car(alpr_data, gid):
 	response = {}
 	if not car:
 		response["open_gate"] = False
+		response["plate_detected"] = alpr_data[0]["plate"]
 	else:
+		if is_recent(license_plate):
+			response["open_gate"] = False
+			response["plate_detected"] = license_plate
+			response["message"] = "Recently detected this license plate"
+		else:
+			if car in garage_manager.cars_in_garage.all():
+				exit(car, garage_manager)
+			else:
+				enter(car, garage, garage_manager)
 
-		print "Successfully Logged Car"
-
-		if car in garage_manager.cars_in_garage.all():
-			exit(car, garage_manager)
-		enter(car, garage, garage_manager)
-
-		response["open_gate"] = True
-
+			response["open_gate"] = True
+			response["plate_detected"] = license_plate
+			response["message"] = "Opening gate"
+	print response
+	sys.stdout.flush()
 	return response
+
+def is_recent(license_plate):
+	transactions = []
+	transactions.append(Transaction.objects.latest('time_in'))
+	transactions.append(Transaction.objects.latest('time_out'))
+	now = datetime.now(pytz.utc)
+	diff = timedelta(seconds=20)
+
+	for transaction in transactions:
+		#if transaction.car.license_plate == license_plate:
+
+		din = now - transaction.time_in
+		print "Din: " , din
+		if (din < diff):
+			return True
+		if transaction.time_out != None:
+			dout = now - transaction.time_out
+			print "Dout: " , dout
+			if (dout < diff):
+				return True
+	return False
 
